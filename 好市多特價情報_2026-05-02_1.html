@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛒 好市多特價情報 2026/05/02 — AI 價格分析</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #c0392b;
+  --red2: #e74c3c;
+  --gold: #f39c12;
+  --gold2: #f1c40f;
+  --navy: #1a237e;
+  --navy2: #283593;
+  --bg: #f7f5f2;
+  --card: #fff;
+  --border: rgba(0,0,0,0.08);
+  --text: #1c1c1e;
+  --muted: #8e8e93;
+  --green: #27ae60;
+  --orange: #e67e22;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* HEADER */
+.header{background:linear-gradient(160deg,#b71c1c 0%,#c62828 40%,#1a237e 100%);color:#fff;padding:28px 20px 22px;position:relative;overflow:hidden}
+.header::after{content:'COSTCO';font-family:'Bebas Neue',sans-serif;font-size:220px;position:absolute;right:-20px;top:-40px;opacity:0.04;letter-spacing:-5px;pointer-events:none}
+.h-top{position:relative;z-index:1}
+.h-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,7vw,58px);letter-spacing:3px;line-height:1}
+.h-title em{color:var(--gold2);font-style:normal}
+.h-sub{font-size:13px;opacity:0.8;margin-top:6px;letter-spacing:1px}
+.h-stats{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;position:relative;z-index:1}
+.h-stat{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:8px 16px;text-align:center;min-width:80px}
+.h-stat-n{font-size:22px;font-weight:900;color:var(--gold2);line-height:1}
+.h-stat-l{font-size:11px;opacity:0.8;margin-top:2px}
+
+/* AI BANNER */
+.ai-banner{background:var(--navy);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:10px;font-size:13px}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:#4caf50;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+#ai-status{flex:1}
+.progress-bar{height:3px;background:rgba(255,255,255,0.2);margin-top:6px;border-radius:2px;overflow:hidden;display:none}
+.progress-fill{height:100%;background:var(--gold2);border-radius:2px;transition:width 0.3s;width:0%}
+
+/* FILTERS */
+.filters{background:#fff;border-bottom:1px solid var(--border);padding:10px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;sticky;top:0;z-index:100;position:sticky}
+.filters::-webkit-scrollbar{display:none}
+.filter-btn{background:none;border:1.5px solid var(--border);color:var(--muted);font-family:'Noto Sans TC',sans-serif;font-size:12px;padding:5px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;transition:all 0.2s}
+.filter-btn.active,.filter-btn:hover{border-color:var(--red);color:var(--red);background:#fef0f0}
+
+/* SECTION */
+.section-wrap{max-width:1100px;margin:0 auto;padding:0 12px}
+.section-head{display:flex;align-items:center;gap:10px;padding:20px 0 10px;border-bottom:2px solid var(--navy);margin-bottom:14px}
+.section-head-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--navy)}
+.deadline-tag{background:var(--red);color:#fff;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700}
+.count-tag{background:#f0f0f5;color:var(--muted);font-size:11px;padding:2px 8px;border-radius:12px}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:28px}
+
+/* CARD */
+.card{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--border);transition:transform 0.2s,box-shadow 0.2s;position:relative}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,0.12)}
+.card.hidden-deal::before{content:'🔍 隱藏';position:absolute;top:8px;left:8px;background:var(--navy);color:#fff;font-size:9px;padding:2px 7px;border-radius:5px;font-weight:700;z-index:2}
+
+/* IMAGE AREA */
+.card-img{position:relative;aspect-ratio:4/3;background:#f0ede8;overflow:hidden}
+.card-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.3s}
+.card:hover .card-img img{transform:scale(1.05)}
+.card-img .placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#ddd}
+.freq-pill{position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;color:#fff;letter-spacing:0.3px}
+.freq-pill.high{background:#e74c3c}
+.freq-pill.mid{background:#e67e22}
+.freq-pill.low{background:#27ae60}
+
+/* PRICE BOX */
+.price-box{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,transparent 100%);padding:6px 8px 7px;min-height:36px}
+.price-loading{color:rgba(255,255,255,0.6);font-size:10px;display:flex;align-items:center;gap:4px}
+.price-spinner{width:10px;height:10px;border:1.5px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.price-data{color:#fff}
+.price-orig{font-size:11px;opacity:0.75;text-decoration:line-through}
+.price-discount{font-size:11px;opacity:0.8;color:var(--gold2)}
+.price-final{font-size:16px;font-weight:900;color:var(--gold2)}
+.price-formula{font-size:10px;opacity:0.8;color:rgba(255,255,255,0.85)}
+.price-na{color:rgba(255,255,255,0.5);font-size:10px}
+
+/* BODY */
+.card-body{padding:9px 11px 12px}
+.card-cat{font-size:10px;color:var(--muted);margin-bottom:4px}
+.card-name{font-size:12px;font-weight:700;line-height:1.4;color:var(--text)}
+.card-sku{font-size:10px;color:#bbb;margin-top:2px}
+
+/* LEGEND */
+.legend{max-width:1100px;margin:14px auto 4px;padding:0 12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.leg-item{display:flex;align-items:center;gap:5px}
+.leg-dot{width:8px;height:8px;border-radius:50%}
+
+/* FOOTER */
+footer{background:var(--navy);color:rgba(255,255,255,0.5);text-align:center;padding:20px;font-size:11px;margin-top:30px}
+footer strong{color:#fff}
+
+@media(max-width:480px){
+  .grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .h-stats{gap:8px}
+  .h-stat{min-width:70px;padding:6px 10px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="h-top">
+    <div class="h-title">好市多 <em>特價</em> 情報</div>
+    <div class="h-sub">📅 2026年5月2日（六）· 現場賣場目擊 · AI 自動識別價格</div>
+    <div class="h-stats">
+      <div class="h-stat"><div class="h-stat-n" id="stat-total">149</div><div class="h-stat-l">總商品數</div></div>
+      <div class="h-stat"><div class="h-stat-n" id="stat-priced" style="color:#4fc3f7">0</div><div class="h-stat-l">已識別價格</div></div>
+      <div class="h-stat"><div class="h-stat-n" style="color:#a5d6a7">低頻</div><div class="h-stat-l">罕見特價必搶</div></div>
+      <div class="h-stat"><div class="h-stat-n" style="color:#ffcc02">中頻</div><div class="h-stat-l">偶爾有特價</div></div>
+      <div class="h-stat"><div class="h-stat-n" style="color:#ef9a9a">高頻</div><div class="h-stat-l">常態特價</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="ai-banner">
+  <div class="ai-dot" id="ai-dot"></div>
+  <div id="ai-status">🤖 AI 正在讀取商品圖片，自動識別價格標籤...</div>
+  <div class="progress-bar" id="prog-bar"><div class="progress-fill" id="prog-fill"></div></div>
+</div>
+
+<div class="filters" id="filters">
+  <button class="filter-btn active" data-f="all">📋 全部</button>
+  <button class="filter-btn" data-f="food">🍱 食品飲料</button>
+  <button class="filter-btn" data-f="health">💊 健康保養</button>
+  <button class="filter-btn" data-f="home">🏠 家電3C</button>
+  <button class="filter-btn" data-f="clothing">👕 服飾寢具</button>
+  <button class="filter-btn" data-f="daily">🧴 生活雜貨</button>
+  <button class="filter-btn" data-f="hidden">🔍 隱藏優惠</button>
+  <button class="filter-btn" data-f="low">⭐ 罕見特價</button>
+</div>
+
+<div class="legend">
+  <span>特價頻率：</span>
+  <span class="leg-item"><span class="leg-dot" style="background:#e74c3c"></span>高頻（常見）</span>
+  <span class="leg-item"><span class="leg-dot" style="background:#e67e22"></span>中頻（季節性）</span>
+  <span class="leg-item"><span class="leg-dot" style="background:#27ae60"></span>低頻（罕見必搶）</span>
+</div>
+
+<div id="main-container"></div>
+
+<footer>資料來源：<strong>今購百科 Daybuy.tw</strong> · AI 價格識別：<strong>Claude Sonnet</strong> · 僅供參考，實際以好市多現場為準</footer>
+
+<script>
+const PRODUCTS = [
+  {name:"WHIRLPOOL 惠而浦定頻除濕機 20公升",sku:"#143539",cat:"home",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_1.jpg"},
+  {name:"BERKSHIRE 涼感被",sku:"#690459",cat:"clothing",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_2.jpg"},
+  {name:"SEALY 席伊麗床墊",sku:"#125600",cat:"home",freq:"low",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_3.jpg"},
+  {name:"LENOR 蘭諾衣物抗黃抗菌芳香豆",sku:"#150978",cat:"daily",freq:"high",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/20260426_070442809_iOS.jpg"},
+  {name:"ARIEL 4D超強極淨洗衣膠囊",sku:"#337700",cat:"daily",freq:"high",hidden:false,img:""},
+  {name:"CJ BIBIGO 冷凍高麗韭菜餃",sku:"#658912",cat:"food",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_7.jpg"},
+  {name:"MALTESERS 麥提莎麥芽脆心巧克力",sku:"#137722",cat:"food",freq:"high",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_8.jpg"},
+  {name:"NONGSHIM 農心安城湯麵",sku:"#144777",cat:"food",freq:"high",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_9.jpg"},
+  {name:"KOKIRI 哇象海苔捲原味",sku:"#1212069",cat:"food",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_10.jpg"},
+  {name:"QUAKER 桂格莓好果漾沖泡穀奶昔",sku:"#283269",cat:"food",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_11.jpg"},
+  {name:"CHARLES SMITH KUNGFU GIRL 美國白葡萄酒",sku:"#548831",cat:"food",freq:"low",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_12.jpg"},
+  {name:"MOCCONA 中焙即溶咖啡粉",sku:"#128828",cat:"food",freq:"high",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_13.jpg"},
+  {name:"NATURAL BENEFITS 純在芭樂檸檬綠茶",sku:"#131330",cat:"food",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_14.jpg"},
+  {name:"CASCADE DAIRY 柯爾比傑克乾酪片",sku:"#532597",cat:"food",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_15.jpg"},
+  {name:"MAY FLOWER 五月花妙用棉柔抽取衛生紙",sku:"#87901",cat:"daily",freq:"high",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/20260429_022552526_iOS.jpg"},
+  {name:"RONGCHY 榮褀蜜漬黑豆",sku:"#169367",cat:"food",freq:"low",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_17.jpg"},
+  {name:"YJC 元進莊黑蒜雞湯",sku:"#131811",cat:"food",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_18.jpg"},
+  {name:"綜合迷你戚風蛋糕10入",sku:"#156806",cat:"food",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_19.jpg"},
+  {name:"MIO MIVUE MP05 雙2K行車紀錄器",sku:"#152185",cat:"home",freq:"low",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_20.jpg"},
+  {name:"MICHELIN 米其林雨刷",sku:"#1426521",cat:"home",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_21.jpg"},
+  {name:"KINGMORI 日本萬能醋",sku:"#88866",cat:"food",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_22.jpg"},
+  {name:"TCL 55吋 MINI LED 顯示器",sku:"#153539",cat:"home",freq:"low",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_23.jpg"},
+  {name:"PHILIPS 75吋4K顯示器聲霸組合",sku:"#153515",cat:"home",freq:"low",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_24.jpg"},
+  {name:"MAMY POKO 滿意寶寶瞬潔乾爽紙尿褲 M/L",sku:"#328028",cat:"daily",freq:"high",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_25.jpg"},
+  {name:"MAMY POKO 哆啦A夢輕巧褲",sku:"#526086",cat:"daily",freq:"high",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_26.jpg"},
+  {name:"F-SEASONS 降溫晴雨傘兩入組",sku:"#157380",cat:"daily",freq:"low",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_27.jpg"},
+  {name:"DAH TIEN 大田鱈魚黑芝麻夾心絲",sku:"#231059",cat:"food",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_28.jpg"},
+  {name:"NATURE VALLEY 天然谷綜合燕麥棒",sku:"#109665",cat:"food",freq:"high",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_29.jpg"},
+  {name:"OVO 智慧投影機 U10-A",sku:"#153213",cat:"home",freq:"low",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_30.jpg"},
+  {name:"CENTRUM 銀寶善存女性綜合維他命",sku:"#765268",cat:"health",freq:"high",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_31.jpg"},
+  {name:"CENTRUM 銀寶善存男性綜合維他命",sku:"#765269",cat:"health",freq:"high",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_32.jpg"},
+  {name:"KF GOODS 口福不淺有機雙麻派",sku:"#116754",cat:"food",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_33.jpg"},
+  {name:"WEIDER 威德檸檬酸鈣",sku:"#94047",cat:"health",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_34.jpg"},
+  {name:"合利他命強效錠超值組",sku:"#997786",cat:"health",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_35.jpg"},
+  {name:"QUAKER 桂格雙效活靈芝滋補液",sku:"#103093",cat:"health",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_37.jpg"},
+  {name:"MEIJI 明治膠原蛋白粉",sku:"#245524",cat:"health",freq:"high",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_38.jpg"},
+  {name:"MOVE FREE 益節加強型迷你錠",sku:"#363985",cat:"health",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_39.jpg"},
+  {name:"BIODERMA 貝膚黛瑪舒敏高效潔膚液",sku:"#315153",cat:"health",freq:"high",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_40.jpg"},
+  {name:"CERAVE 適樂膚溫和泡沫潔膚露",sku:"#238410",cat:"health",freq:"high",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_41.jpg"},
+  {name:"澳洲製植物精油香皂組合",sku:"#438047",cat:"daily",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_42.jpg"},
+  {name:"CUISINART 美膳雅三合一微波氣炸烤箱",sku:"#148412",cat:"home",freq:"low",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_43.jpg"},
+  {name:"MOBIL-1 SN 5W-50 全合成機油",sku:"#93456",cat:"home",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_44.jpg"},
+  {name:"GLASSLOCK 玻璃保鮮盒含蓋28件組",sku:"#2379252",cat:"home",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_45.jpg"},
+  {name:"SHARP 夏普水波爐 26公升",sku:"#143973",cat:"home",freq:"low",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_46.jpg"},
+  {name:"LAY'S 樂事北海道嫩煎干貝洋芋片",sku:"#228788",cat:"food",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_47.jpg"},
+  {name:"AGV 愛之味純濃燕麥",sku:"#97313",cat:"food",freq:"high",hidden:false,img:""},
+  {name:"0.6克拉圓形鑽石項鍊",sku:"#2036022",cat:"clothing",freq:"low",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_48.jpg"},
+  {name:"TP-LINK DECO X55 雙頻路由器2入",sku:"#142138",cat:"home",freq:"mid",hidden:false,img:"https://www.daybuy.tw/wp-content/uploads/2026/04/LINE_ALBUM_%E7%AC%AC1%E6%B3%A2_260417_50.jpg"},
+  {name:"STRONGBOW 詩莊堡金黃蘋果酒",sku:"#146075",cat:"food",freq:"mid",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_1.jpg"},
+  {name:"CAT CHOW 貓乾糧嫩雞海陸拼盤",sku:"#340354",cat:"daily",freq:"mid",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_2.jpg"},
+  {name:"HOTEL GRAND 萊賽爾桑蠶絲四季被",sku:"#8523387",cat:"clothing",freq:"low",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_3.jpg"},
+  {name:"CODES COMBINE 女睡衣套組",sku:"#1956390",cat:"clothing",freq:"low",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_4.jpg"},
+  {name:"MIXSOON 大豆潤膚精華液",sku:"#151783",cat:"health",freq:"low",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_5.jpg"},
+  {name:"HUXLEY 香氛護手霜",sku:"#153240",cat:"health",freq:"low",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_6.jpg"},
+  {name:"KIRKLAND 科克蘭維他命C咀嚼錠",sku:"#125100",cat:"health",freq:"high",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_7.jpg"},
+  {name:"SAMSUNG 623公升雙循環冰箱",sku:"#126223",cat:"home",freq:"low",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_8.jpg"},
+  {name:"BAYSIDE 八格儲物櫃含儲物籃",sku:"#1861714",cat:"home",freq:"mid",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_9.jpg"},
+  {name:"DRANO 通樂全效疏通劑",sku:"#79696",cat:"daily",freq:"high",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_10.jpg"},
+  {name:"GLAD 強力保鮮膜3入",sku:"#350086",cat:"daily",freq:"high",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_11.jpg"},
+  {name:"FRENCH CONNECTION 男內褲五入組",sku:"#582746",cat:"clothing",freq:"mid",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_12.jpg"},
+  {name:"綜合壽司",sku:"#646400",cat:"food",freq:"high",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_13.jpg"},
+  {name:"綜合迷你夾餡甜甜圈3入",sku:"#188424",cat:"food",freq:"mid",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_14.jpg"},
+  {name:"GOOD PLENTY 銀耳紅棗美人飲",sku:"#145425",cat:"food",freq:"mid",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_15.jpg"},
+  {name:"美國茂谷柑",sku:"#98617",cat:"food",freq:"mid",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_16.jpg"},
+  {name:"CSD 中衛醫療口罩200入",sku:"#133133",cat:"health",freq:"high",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_17.jpg"},
+  {name:"JORDAN 個性軟毛牙刷8入",sku:"#677939",cat:"daily",freq:"high",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_18.jpg"},
+  {name:"MENTHOLATUM 持色水光潤唇膏",sku:"#146170",cat:"health",freq:"mid",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_19.jpg"},
+  {name:"CALVIN KLEIN 男短袖上衣",sku:"#8521389",cat:"clothing",freq:"mid",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_20.jpg"},
+  {name:"KANGOL 女圓領短袖上衣",sku:"#1846337",cat:"clothing",freq:"mid",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_21.jpg"},
+  {name:"CALVIN KLEIN 女短袖圓領上衣",sku:"#149468",cat:"clothing",freq:"mid",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_22.jpg"},
+  {name:"KEITH HARING 兒童短袖三件組",sku:"#1956431",cat:"clothing",freq:"low",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_23.jpg"},
+  {name:"TOMMY HILFIGER 女休閒短褲",sku:"#1846379",cat:"clothing",freq:"mid",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_25.jpg"},
+  {name:"SCOTCH & SODA 女無袖連身洋裝",sku:"#1956396",cat:"clothing",freq:"low",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_26.jpg"},
+  {name:"RIVIERA HOME 花邊浴室地墊2入",sku:"#669807",cat:"daily",freq:"mid",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_28.jpg"},
+  {name:"CALPIS 可爾必思乳酸菌飲料",sku:"#376899",cat:"food",freq:"high",hidden:true,img:"https://www.daybuy.tw/wp-content/uploads/2026/05/LINE_ALBUM_%E9%9A%B1%E8%97%8F%E5%84%AA%E6%83%A0_260501_29.jpg"},
+];
+
+const catEmoji = {food:'🍱',health:'💊',home:'🏠',clothing:'👕',daily:'🧴'};
+const catLabel = {food:'食品飲料',health:'健康保養',home:'家電3C',clothing:'服飾寢具',daily:'生活雜貨'};
+
+let priceCache = {};
+let pricedCount = 0;
+
+function buildUI(filter) {
+  const container = document.getElementById('main-container');
+  container.innerHTML = '';
+  const filtered = PRODUCTS.filter(p => {
+    if(filter === 'all') return true;
+    if(filter === 'hidden') return p.hidden;
+    if(filter === 'low') return p.freq === 'low';
+    return p.cat === filter;
+  });
+
+  document.getElementById('stat-total').textContent = filtered.length;
+
+  const groups = {};
+  filtered.forEach(p => {
+    const key = p.hidden ? '隱藏優惠（05/08截止）' : '第1波特價（05/11截止）';
+    if(!groups[key]) groups[key] = [];
+    groups[key].push(p);
+  });
+
+  Object.keys(groups).sort().forEach(gk => {
+    const items = groups[gk];
+    const wrap = document.createElement('div');
+    wrap.className = 'section-wrap';
+    const deadline = gk.includes('05/08') ? '05/08' : '05/11';
+    const now = new Date(2026,4,2);
+    const end = new Date(2026,4,parseInt(deadline.split('/')[1]));
+    const days = Math.ceil((end-now)/86400000);
+    wrap.innerHTML = `
+      <div class="section-head">
+        <div class="section-head-title">${gk}</div>
+        <span class="deadline-tag">⏰ 剩 ${days} 天</span>
+        <span class="count-tag">${items.length} 件</span>
+      </div>
+    `;
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    items.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'card' + (p.hidden ? ' hidden-deal' : '');
+      card.dataset.sku = p.sku;
+      const imgHtml = p.img
+        ? `<img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        : '';
+      const placeholderStyle = p.img ? 'display:none' : '';
+      const cachedPrice = priceCache[p.sku];
+      const priceHtml = cachedPrice ? renderPrice(cachedPrice) : `<div class="price-loading"><span class="price-spinner"></span><span>AI 識別中...</span></div>`;
+      card.innerHTML = `
+        <div class="card-img">
+          ${imgHtml}
+          <div class="placeholder" style="${placeholderStyle}">${catEmoji[p.cat]||'📦'}</div>
+          <span class="freq-pill ${p.freq}">${p.freq==='high'?'高頻':p.freq==='mid'?'中頻':'低頻'}</span>
+          <div class="price-box" id="pb-${p.sku.replace(/[^a-z0-9]/gi,'_')}">${priceHtml}</div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">${catEmoji[p.cat]||''} ${catLabel[p.cat]||''}</div>
+          <div class="card-name">${p.name}</div>
+          <div class="card-sku">${p.sku}</div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+    wrap.appendChild(grid);
+    container.appendChild(wrap);
+  });
+}
+
+function renderPrice(data) {
+  if(!data || data.error) return `<div class="price-na">無法識別價格</div>`;
+  let html = '<div class="price-data">';
+  if(data.orig && data.discount) {
+    html += `<div class="price-orig">原價 $${data.orig}</div>`;
+    html += `<div class="price-discount">折扣 -$${data.discount}</div>`;
+    const final = data.orig - data.discount;
+    html += `<div class="price-final">$${final}</div>`;
+    html += `<div class="price-formula">${data.orig} - ${data.discount} = ${final}</div>`;
+  } else if(data.sale) {
+    html += `<div class="price-final">$${data.sale}</div>`;
+    if(data.formula) html += `<div class="price-formula">${data.formula}</div>`;
+  } else {
+    html += `<div class="price-na">價格見現場</div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function updatePriceBox(sku, data) {
+  const id = 'pb-' + sku.replace(/[^a-z0-9]/gi,'_');
+  const el = document.getElementById(id);
+  if(el) el.innerHTML = renderPrice(data);
+}
+
+async function fetchPriceForProduct(product) {
+  if(!product.img) {
+    priceCache[product.sku] = {error:true};
+    return;
+  }
+  try {
+    const prompt = `你是一個好市多商品價格識別助手。請查看這張好市多商品特價照片，找出價格標籤資訊。
+商品名稱：${product.name} ${product.sku}
+
+請只回傳 JSON 格式（不要任何其他文字）：
+{"orig": 原價數字, "discount": 折扣金額數字, "sale": 特價數字, "formula": "原價-折扣=特價的公式字串"}
+
+例如：{"orig": 580, "discount": 70, "sale": 510, "formula": "580-70=510"}
+
+如果看不到清楚的價格標籤，回傳：{"error": true}
+只回傳 JSON，不要任何解釋文字。`;
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 200,
+        messages: [{
+          role: 'user',
+          content: [
+            {type:'image', source:{type:'url', url: product.img}},
+            {type:'text', text: prompt}
+          ]
+        }]
+      })
+    });
+    const data = await resp.json();
+    const text = (data.content||[]).map(b=>b.text||'').join('').trim();
+    const clean = text.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+    priceCache[product.sku] = parsed;
+    pricedCount++;
+    document.getElementById('stat-priced').textContent = pricedCount;
+    updatePriceBox(product.sku, parsed);
+  } catch(e) {
+    priceCache[product.sku] = {error:true};
+    updatePriceBox(product.sku, {error:true});
+  }
+}
+
+async function startAIPricing() {
+  const statusEl = document.getElementById('ai-status');
+  const progBar = document.getElementById('prog-bar');
+  const progFill = document.getElementById('prog-fill');
+  const aiDot = document.getElementById('ai-dot');
+  progBar.style.display = 'block';
+  
+  const hasImg = PRODUCTS.filter(p => p.img);
+  const total = hasImg.length;
+  let done = 0;
+
+  const BATCH = 4;
+  for(let i=0; i<hasImg.length; i+=BATCH) {
+    const batch = hasImg.slice(i, i+BATCH);
+    statusEl.textContent = `🤖 AI 正在分析第 ${i+1}~${Math.min(i+BATCH,total)}/${total} 件商品的價格標籤...`;
+    await Promise.all(batch.map(p => fetchPriceForProduct(p)));
+    done += batch.length;
+    progFill.style.width = Math.round(done/total*100) + '%';
+  }
+
+  aiDot.style.background = '#4caf50';
+  aiDot.style.animation = 'none';
+  statusEl.textContent = `✅ AI 完成！已識別 ${pricedCount}/${total} 件商品價格`;
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    buildUI(btn.dataset.f);
+  });
+});
+
+buildUI('all');
+startAIPricing();
+</script>
+</body>
+</html>
